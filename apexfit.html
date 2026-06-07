@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#ff6b35" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ApexFit" />
+  <meta name="description" content="Personal fitness and nutrition coach. No gym or experience needed." />
+  <title>ApexFit – Your Fitness Coach</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0f1a;
+  --surface: #13162a;
+  --surface2: #1a1e35;
+  --border: #252a45;
+  --text: #eef0ff;
+  --muted: #6b7299;
+  --faint: #3a3f66;
+  --accent: #ff6b35;
+  --accent-dim: rgba(255,107,53,.12);
+  --blue: #4ea8de;
+  --green: #06d6a0;
+  --purple: #9b5de5;
+  --yellow: #ffd166;
+  --red: #ef476f;
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+/* ── LAYOUT ── */
+#app { display: flex; flex-direction: column; height: 100%; }
+#screen { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+#screen::-webkit-scrollbar { display: none; }
+
+/* ── BOTTOM NAV ── */
+#bottom-nav {
+  display: flex;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 8px 4px calc(8px + var(--safe-bottom));
+  flex-shrink: 0;
+  z-index: 100;
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 6px 0;
+  cursor: pointer;
+  transition: color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-btn .nav-icon { font-size: 22px; transition: transform .2s; }
+.nav-btn.active { color: var(--accent); }
+.nav-btn.active .nav-icon { transform: scale(1.15); }
+
+/* ── CARDS & SURFACES ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.card-inner {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+
+/* ── TYPOGRAPHY ── */
+.screen-title { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+.screen-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
+.section-label { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .05em; }
+
+/* ── INPUTS ── */
+input, select, textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px; /* prevent iOS zoom */
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%236b7299' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+select option { background: #1a1e35; }
+textarea { resize: none; line-height: 1.5; }
+.input-group { margin-bottom: 14px; }
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.input-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 15px; border-radius: var(--radius);
+  border: none; font-family: var(--font); font-size: 16px; font-weight: 700;
+  cursor: pointer; transition: transform .1s, opacity .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); }
+.btn-outline { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); }
+.btn-sm { padding: 9px 16px; font-size: 13px; border-radius: var(--radius-sm); width: auto; }
+.btn-danger { background: rgba(239,71,111,.15); border: 1.5px solid rgba(239,71,111,.3); color: var(--red); }
+
+/* ── PROGRESS BARS ── */
+.progress-bar { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+
+/* ── CHIPS / TAGS ── */
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+}
+.chip-accent { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(255,107,53,.25); }
+.chip-green { background: rgba(6,214,160,.1); color: var(--green); border: 1px solid rgba(6,214,160,.25); }
+.chip-blue { background: rgba(78,168,222,.1); color: var(--blue); border: 1px solid rgba(78,168,222,.25); }
+.chip-yellow { background: rgba(255,209,102,.1); color: var(--yellow); border: 1px solid rgba(255,209,102,.25); }
+.chip-red { background: rgba(239,71,111,.1); color: var(--red); border: 1px solid rgba(239,71,111,.25); }
+
+/* ── KPI GRID ── */
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.kpi-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.kpi-val { font-size: 26px; font-weight: 800; line-height: 1.1; }
+.kpi-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+/* ── LISTS ── */
+.list-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+.list-row:last-child { border-bottom: none; }
+
+/* ── WORKOUT EXERCISE CARD ── */
+.exercise-card {
+  background: var(--surface2); border-radius: var(--radius-sm);
+  padding: 14px; margin-bottom: 10px;
+  border-left: 3px solid var(--accent);
+}
+.exercise-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.exercise-detail { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── ONBOARDING ── */
+.onboard-wrap {
+  min-height: 100%; padding: 24px 20px calc(24px + var(--safe-bottom));
+  display: flex; flex-direction: column;
+}
+.onboard-step { display: none; flex-direction: column; flex: 1; animation: fadeIn .3s ease; }
+.onboard-step.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.step-indicator { display: flex; gap: 6px; margin-bottom: 28px; }
+.step-dot { flex: 1; height: 4px; border-radius: 2px; background: var(--border); transition: background .3s; }
+.step-dot.done { background: var(--accent); }
+
+.big-emoji { font-size: 52px; margin-bottom: 16px; }
+.onboard-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+.onboard-sub { font-size: 15px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
+
+/* ── CHOICE BUTTONS ── */
+.choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.choice-btn {
+  background: var(--surface2); border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 16px 12px; text-align: center;
+  cursor: pointer; transition: all .2s; font-family: var(--font);
+  -webkit-tap-highlight-color: transparent;
+}
+.choice-btn .choice-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+.choice-btn .choice-label { font-size: 13px; font-weight: 700; color: var(--text); display: block; }
+.choice-btn .choice-sub { font-size: 11px; color: var(--muted); display: block; margin-top: 2px; }
+.choice-btn.selected { border-color: var(--accent); background: var(--accent-dim); }
+.choice-btn.selected .choice-label { color: var(--accent); }
+
+/* ── MACRO CIRCLES ── */
+.macro-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 16px; }
+.macro-cell { background: var(--surface2); border-radius: var(--radius-sm); padding: 12px 8px; text-align: center; }
+.macro-val { font-size: 18px; font-weight: 800; }
+.macro-name { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; margin-top: 2px; }
+.macro-pct { font-size: 10px; margin-top: 1px; }
+
+/* ── TODAY CHECKLIST ── */
+.check-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px; background: var(--surface2); border-radius: var(--radius-sm);
+  margin-bottom: 8px; cursor: pointer; transition: background .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.check-item.done { opacity: .55; }
+.check-box {
+  width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 14px; transition: all .2s;
+}
+.check-item.done .check-box { background: var(--green); border-color: var(--green); }
+.check-text { flex: 1; }
+.check-title { font-weight: 700; font-size: 14px; }
+.check-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── AI CHAT ── */
+.chat-messages { flex: 1; overflow-y: auto; padding: 16px 0; display: flex; flex-direction: column; gap: 12px; }
+.chat-messages::-webkit-scrollbar { display: none; }
+.chat-bubble {
+  max-width: 85%; padding: 12px 16px; border-radius: 18px;
+  font-size: 14px; line-height: 1.55;
+}
+.chat-bubble.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+.chat-bubble.ai { align-self: flex-start; background: var(--surface2); color: var(--text); border-bottom-left-radius: 4px; }
+.chat-input-row { display: flex; gap: 8px; padding: 12px 0; flex-shrink: 0; }
+.chat-input-row input { flex: 1; }
+.chat-send { background: var(--accent); border: none; border-radius: var(--radius-sm); color: #fff; padding: 12px 16px; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+
+/* ── STREAK DOTS ── */
+.streak-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+.sdot { width: 11px; height: 11px; border-radius: 3px; background: var(--surface2); }
+.sdot.on { background: var(--accent); }
+
+/* ── FLOATING BADGE ── */
+.badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; border-radius: 9px; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 0 4px; }
+
+/* ── INSTALL BANNER ── */
+#install-banner {
+  display: none; align-items: center; gap: 12px;
+  background: var(--accent-dim); border-bottom: 1px solid rgba(255,107,53,.2);
+  padding: 12px 16px; flex-shrink: 0;
+}
+#install-banner.show { display: flex; }
+
+/* ── MODALS ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.7); z-index: 1000;
+  align-items: flex-end; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: var(--surface); border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(20px + var(--safe-bottom));
+  width: 100%; max-height: 85vh; overflow-y: auto;
+  animation: slideUp .25s ease;
+}
+@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-handle { width: 36px; height: 4px; border-radius: 2px; background: var(--border); margin: 0 auto 16px; }
+.modal-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+
+/* ── PAGE PADDING ── */
+.page { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+
+/* ── WATER TRACKER ── */
+.water-cups { display: flex; flex-wrap: wrap; gap: 8px; }
+.water-cup { width: 42px; height: 42px; border-radius: 10px; background: var(--surface2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: all .2s; -webkit-tap-highlight-color: transparent; }
+.water-cup.filled { background: rgba(78,168,222,.2); border-color: var(--blue); }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: calc(80px + var(--safe-bottom)); left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface); border: 1px solid var(--border); border-radius: 24px;
+  padding: 10px 20px; font-size: 14px; font-weight: 600;
+  opacity: 0; transition: all .3s; z-index: 2000; white-space: nowrap;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── SCROLLABLE PAGE SECTIONS ── */
+.page-section { margin-bottom: 24px; }
+
+/* ── RESPONSIVE ── */
+@media (min-width: 480px) {
+  .page { padding: 24px 20px; }
+  .kpi-grid { grid-template-columns: repeat(2,1fr); }
+}
+#splash {
+  position:fixed;inset:0;background:#0d0f1a;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:9999;transition:opacity .4s;
+}
+#splash.hidden { opacity:0; pointer-events:none; }
+.splash-logo { width:72px;height:72px;border-radius:20px;background:#ff6b35;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:16px; }
+.splash-name { font-size:26px;font-weight:800;color:#eef0ff;font-family:'Plus Jakarta Sans',sans-serif; }
+.splash-sub { font-size:14px;color:#6b7299;margin-top:6px;font-family:'Plus Jakarta Sans',sans-serif; }
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-logo">A</div>
+  <div class="splash-name">ApexFit</div>
+  <div class="splash-sub">Your Personal Coach</div>
+</div>
+
+<div id="install-banner">
+  <div style="font-size:20px">📱</div>
+  <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#eef0ff">Add to Home Screen</div><div style="font-size:11px;color:#6b7299">Use ApexFit like an app</div></div>
+  <button onclick="installApp()" style="background:#ff6b35;border:none;border-radius:8px;color:#fff;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Install</button>
+  <button onclick="this.parentElement.classList.remove('show')" style="background:none;border:none;color:#6b7299;font-size:20px;cursor:pointer;padding:4px">×</button>
+</div>
+
+<div id="app" style="display:flex;flex-direction:column;height:100%">
+  <div id="screen" style="flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch"></div>
+  <nav id="bottom-nav" style="display:none">
+    <button class="nav-btn active" data-view="home"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn" data-view="workout"><span class="nav-icon">💪</span>Workout</button>
+    <button class="nav-btn" data-view="nutrition"><span class="nav-icon">🥗</span>Nutrition</button>
+    <button class="nav-btn" data-view="progress"><span class="nav-icon">📈</span>Progress</button>
+    <button class="nav-btn" data-view="coach"><span class="nav-icon">🤖</span>Coach</button>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── EXERCISE DATABASE ─────────────────────────────────────────────────────────
+const DB = {
+  // id, name, muscles, equipment, difficulty(1-3), sets, reps, rest, tip, isCardio
+  strength: {
+    chest: [
+      { id:'push_up', name:'Push-Up', muscles:'Chest, Shoulders, Triceps', equip:'none', diff:1, sets:3, reps:'8-12', rest:60, tip:'Keep your body in a straight line. Lower your chest to the floor, push back up.' },
+      { id:'inc_push_up', name:'Incline Push-Up', muscles:'Upper Chest, Shoulders', equip:'chair/bench', diff:1, sets:3, reps:'10-15', rest:60, tip:'Place hands on a chair or couch. Easier than regular push-ups — great to start here.' },
+      { id:'wide_push_up', name:'Wide Push-Up', muscles:'Chest, Shoulders', equip:'none', diff:1, sets:3, reps:'8-12', rest:60, tip:'Place hands wider than shoulder-width. Works your chest more than regular push-ups.' },
+    ],
+    back: [
+      { id:'superman', name:'Superman Hold', muscles:'Lower Back, Glutes', equip:'none', diff:1, sets:3, reps:'10-12', rest:60, tip:'Lie on your stomach. Raise arms and legs off the floor simultaneously and hold for 2 seconds.' },
+      { id:'inv_row', name:'Towel Row', muscles:'Back, Biceps', equip:'towel/table', diff:1, sets:3, reps:'8-12', rest:60, tip:'Lie under a sturdy table. Hold the edge and pull your chest up to it. Great back builder.' },
+      { id:'good_morning', name:'Good Morning', muscles:'Lower Back, Hamstrings', equip:'none', diff:1, sets:3, reps:'12-15', rest:60, tip:'Stand with feet hip-width. Hinge forward at the hips keeping your back straight.' },
+    ],
+    legs: [
+      { id:'squat', name:'Bodyweight Squat', muscles:'Quads, Glutes, Hamstrings', equip:'none', diff:1, sets:3, reps:'12-15', rest:60, tip:'Feet shoulder-width apart. Sit back like you\'re sitting in a chair. Keep chest up.' },
+      { id:'lunge', name:'Reverse Lunge', muscles:'Quads, Glutes, Balance', equip:'none', diff:1, sets:3, reps:'10 each leg', rest:60, tip:'Step backward and lower your back knee toward the floor. Gentler on your knees than forward lunges.' },
+      { id:'glute_bridge', name:'Glute Bridge', muscles:'Glutes, Hamstrings, Core', equip:'none', diff:1, sets:3, reps:'12-15', rest:60, tip:'Lie on your back, feet flat. Push your hips up and squeeze your glutes at the top.' },
+      { id:'wall_sit', name:'Wall Sit', muscles:'Quads, Glutes', equip:'wall', diff:1, sets:3, reps:'30-45 sec', rest:60, tip:'Back flat against the wall, slide down until knees are at 90°. Hold as long as you can.' },
+      { id:'step_up', name:'Step-Up', muscles:'Quads, Glutes, Balance', equip:'stair/chair', diff:1, sets:3, reps:'10 each leg', rest:60, tip:'Step onto a sturdy surface and drive through your heel. Step down with control.' },
+    ],
+    core: [
+      { id:'plank', name:'Plank Hold', muscles:'Core, Shoulders', equip:'none', diff:1, sets:3, reps:'20-40 sec', rest:45, tip:'Forearms on the floor. Keep your back flat, squeeze your core. Don\'t let your hips sag.' },
+      { id:'dead_bug', name:'Dead Bug', muscles:'Core, Lower Back', equip:'none', diff:1, sets:3, reps:'8 each side', rest:45, tip:'Lie on your back, arms up. Lower opposite arm and leg slowly while keeping back pressed flat.' },
+      { id:'bird_dog', name:'Bird Dog', muscles:'Core, Lower Back, Balance', equip:'none', diff:1, sets:3, reps:'8 each side', rest:45, tip:'On hands and knees, extend opposite arm and leg. Hold 2 seconds. Core stability gold.' },
+      { id:'crunches', name:'Crunch', muscles:'Abs', equip:'none', diff:1, sets:3, reps:'15-20', rest:45, tip:'Hands behind head lightly. Curl your shoulders up, not your neck. Exhale on the way up.' },
+      { id:'mt_climber', name:'Mountain Climber', muscles:'Core, Shoulders, Cardio', equip:'none', diff:2, sets:3, reps:'20 total', rest:45, tip:'In push-up position, drive knees to chest alternately. Keep hips level the whole time.' },
+    ],
+    shoulders: [
+      { id:'pike_push', name:'Pike Push-Up', muscles:'Shoulders, Triceps', equip:'none', diff:1, sets:3, reps:'8-10', rest:60, tip:'Form an inverted V with your body. Bend elbows to lower your head toward the floor.' },
+      { id:'lat_raise', name:'Side Lateral Raise', muscles:'Shoulders', equip:'water bottles', diff:1, sets:3, reps:'12-15', rest:60, tip:'Hold water bottles at your sides. Raise arms out to shoulder height. Control the movement.' },
+    ],
+    arms: [
+      { id:'dip', name:'Chair Dip', muscles:'Triceps, Chest', equip:'chair', diff:1, sets:3, reps:'10-12', rest:60, tip:'Hands on chair edge, feet forward. Lower until elbows hit 90°, push back up.' },
+      { id:'curl', name:'Water Bottle Curl', muscles:'Biceps', equip:'water bottles', diff:1, sets:3, reps:'12-15', rest:60, tip:'Curl the bottles toward your shoulders. Squeeze at the top. Lower slowly — 3 counts down.' },
+      { id:'diamond_push', name:'Diamond Push-Up', muscles:'Triceps, Chest', equip:'none', diff:2, sets:3, reps:'6-10', rest:60, tip:'Form a diamond shape with your hands under your chest. This works your triceps hard.' },
+    ]
+  },
+  cardio: [
+    { id:'march', name:'March in Place', duration:3, tip:'Lift your knees to hip height. Pump your arms. Great warm-up.' },
+    { id:'jumping_jacks', name:'Jumping Jacks', duration:2, tip:'Classic cardio. Land softly to protect your joints.' },
+    { id:'high_knees', name:'High Knees', duration:2, tip:'Run in place, driving knees up to waist height. Use your arms!' },
+    { id:'butt_kicks', name:'Butt Kicks', duration:2, tip:'Jog in place, kicking your heels toward your glutes.' },
+    { id:'jog_in_place', name:'Jog in Place', duration:3, tip:'Light jog. Land on the balls of your feet, not your heels.' },
+    { id:'step_touch', name:'Step Touch', duration:3, tip:'Step to the side, touch feet together. Easy on the joints. Great for beginners.' },
+    { id:'box_step', name:'Box Step', duration:3, tip:'Step forward, side, back, side — drawing a box. Easy coordination drill.' },
+  ]
+};
+
+// ── PROGRAM BUILDER ────────────────────────────────────────────────────────────
+window.WorkoutEngine = {
+
+  generateWeeklyPlan(profile) {
+    const { goal, experience, daysPerWeek, equipment } = profile;
+    const days = parseInt(daysPerWeek) || 3;
+    const splits = this._getSplit(goal, days);
+    return splits.map((split, i) => ({
+      dayNum: i + 1,
+      name: split.name,
+      focus: split.focus,
+      exercises: this._buildSession(split, profile),
+      estimatedMinutes: this._estimateTime(split, profile),
+      type: split.type
+    }));
+  },
+
+  _getSplit(goal, days) {
+    const weightLoss = [
+      { name:'Full Body + Cardio', focus:'full', type:'strength_cardio' },
+      { name:'Cardio & Core', focus:'cardio_core', type:'cardio' },
+      { name:'Full Body Strength', focus:'full', type:'strength' },
+      { name:'Active Recovery Walk', focus:'recovery', type:'recovery' },
+      { name:'Full Body + HIIT', focus:'full', type:'strength_cardio' },
+    ];
+    const muscleGain = [
+      { name:'Push Day', focus:'push', type:'strength' },
+      { name:'Pull Day', focus:'pull', type:'strength' },
+      { name:'Leg Day', focus:'legs', type:'strength' },
+      { name:'Push Day', focus:'push', type:'strength' },
+      { name:'Pull & Core', focus:'pull_core', type:'strength' },
+    ];
+    const general = [
+      { name:'Full Body A', focus:'full', type:'strength' },
+      { name:'Cardio & Mobility', focus:'cardio_core', type:'cardio' },
+      { name:'Full Body B', focus:'full', type:'strength' },
+      { name:'Core & Balance', focus:'core', type:'strength' },
+      { name:'Full Body C', focus:'full', type:'strength' },
+    ];
+    const athletic = [
+      { name:'Lower Body Power', focus:'legs', type:'strength' },
+      { name:'HIIT Cardio', focus:'cardio_core', type:'cardio' },
+      { name:'Upper Body', focus:'push', type:'strength' },
+      { name:'Conditioning', focus:'full', type:'strength_cardio' },
+      { name:'Full Body Power', focus:'full', type:'strength' },
+    ];
+    const map = { 'Weight Loss': weightLoss, 'Muscle Gain': muscleGain, 'General Health': general, 'Athletic Performance': athletic, 'Recomposition': general };
+    const template = (map[goal] || general).slice(0, days);
+    return template;
+  },
+
+  _buildSession(split, profile) {
+    const { focus, type } = split;
+    const ex = [];
+    const s = DB.strength;
+
+    // Warm-up cardio
+    if (type !== 'recovery') {
+      ex.push({ ...DB.cardio[0], category:'warmup', label:'🔥 Warm-Up' });
+    }
+
+    if (focus === 'full') {
+      ex.push(this._pick(s.legs), this._pick(s.chest), this._pick(s.back), this._pick(s.core), this._pick(s.shoulders));
+    } else if (focus === 'push') {
+      ex.push(this._pick(s.chest), this._pick(s.chest), this._pick(s.shoulders), this._pick(s.shoulders), this._pick(s.arms));
+    } else if (focus === 'pull' || focus === 'pull_core') {
+      ex.push(this._pick(s.back), this._pick(s.back), this._pick(s.arms), this._pick(s.arms), this._pick(s.core));
+    } else if (focus === 'legs') {
+      ex.push(...s.legs.slice(0, 4), this._pick(s.core));
+    } else if (focus === 'core' || focus === 'cardio_core') {
+      ex.push(...s.core.slice(0, 4));
+      DB.cardio.slice(1,3).forEach(c => ex.push({...c, category:'cardio', label:'💓 Cardio'}));
+    } else if (focus === 'recovery') {
+      return [{ id:'walk', name:'Brisk Walk', duration:20, tip:'Walk at a pace where you can talk but feel slightly breathless. This aids recovery.', category:'recovery', label:'🚶 Recovery' }];
+    }
+
+    if (type === 'strength_cardio') {
+      ex.push(...DB.cardio.slice(1,4).map(c => ({...c, category:'cardio', label:'💓 Cardio Burst'})));
+    }
+
+    // Tag non-cardio as strength
+    return ex.map(e => ({ ...e, category: e.category || 'strength', label: e.label || '💪 Strength' }));
+  },
+
+  _pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; },
+
+  _estimateTime(split, profile) {
+    if (split.focus === 'recovery') return 25;
+    if (split.type === 'cardio') return 30;
+    if (split.type === 'strength_cardio') return 45;
+    return 40;
+  },
+
+  // ── NUTRITION CALCULATOR ──────────────────────────────────────────────────
+  calculateNutrition(profile) {
+    const { age, gender, heightIn, weightLbs, goalWeightLbs, activityLevel, goal } = profile;
+    // Convert
+    const weightKg = weightLbs * 0.453592;
+    const heightCm = heightIn * 2.54;
+    const a = parseInt(age) || 30;
+
+    // Mifflin-St Jeor BMR
+    let bmr;
+    if (gender === 'Female') {
+      bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * a) - 161;
+    } else {
+      bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * a) + 5;
+    }
+
+    // Activity multiplier
+    const actMult = { 'Sedentary': 1.2, 'Lightly Active': 1.375, 'Moderately Active': 1.55, 'Very Active': 1.725 };
+    const tdee = Math.round(bmr * (actMult[activityLevel] || 1.375));
+
+    // Goal-based calorie adjustment
+    let calories, strategy;
+    const deficit = Math.round(tdee * 0.18); // ~18% deficit
+    const surplus = 250;
+    if (goal === 'Weight Loss') {
+      calories = tdee - deficit;
+      strategy = `We cut ${deficit} calories below your maintenance (${tdee}) for steady fat loss — about 0.5–1 lb/week.`;
+    } else if (goal === 'Muscle Gain') {
+      calories = tdee + surplus;
+      strategy = `We add ${surplus} calories above your maintenance (${tdee}) to support muscle growth without excess fat gain.`;
+    } else if (goal === 'Recomposition') {
+      calories = tdee - 150;
+      strategy = `We run a small deficit of 150 calories below maintenance (${tdee}) — enough to slowly lose fat while building muscle.`;
+    } else {
+      calories = tdee;
+      strategy = `We match your maintenance (${tdee}) calories to fuel health and performance without weight change.`;
+    }
+
+    calories = Math.max(calories, gender === 'Female' ? 1200 : 1500);
+    calories = Math.round(calories / 50) * 50; // round to nearest 50
+
+    // Macro split
+    let proteinPct, carbPct, fatPct;
+    if (goal === 'Muscle Gain') { proteinPct=0.30; carbPct=0.45; fatPct=0.25; }
+    else if (goal === 'Weight Loss') { proteinPct=0.35; carbPct=0.35; fatPct=0.30; }
+    else { proteinPct=0.25; carbPct=0.45; fatPct=0.30; }
+
+    const protein = Math.round((calories * proteinPct) / 4);
+    const carbs = Math.round((calories * carbPct) / 4);
+    const fat = Math.round((calories * fatPct) / 9);
+    const water = Math.round(weightLbs * 0.5); // oz
+
+    // Weekly forecast
+    const weeklyChange = goal === 'Weight Loss' ? -((tdee - calories) * 7) / 3500
+      : goal === 'Muscle Gain' ? 0.25 : 0;
+
+    const weeksToGoal = goalWeightLbs && Math.abs(weightLbs - goalWeightLbs) > 1 && weeklyChange !== 0
+      ? Math.round(Math.abs(weightLbs - goalWeightLbs) / Math.abs(weeklyChange))
+      : null;
+
+    return { calories, protein, carbs, fat, water, tdee, strategy, weeklyChange: weeklyChange.toFixed(1), weeksToGoal, proteinPct, carbPct, fatPct };
+  },
+
+  getFoodExamples(macros) {
+    const { protein, carbs, fat, calories } = macros;
+    return [
+      {
+        meal: 'Breakfast',
+        example: `Scrambled eggs (3) + oatmeal (½ cup dry) + banana`,
+        approxCal: Math.round(calories * 0.25)
+      },
+      {
+        meal: 'Lunch',
+        example: `Grilled chicken breast (5 oz) + rice (¾ cup cooked) + side salad`,
+        approxCal: Math.round(calories * 0.30)
+      },
+      {
+        meal: 'Dinner',
+        example: `Salmon or ground beef (5 oz) + sweet potato + steamed broccoli`,
+        approxCal: Math.round(calories * 0.30)
+      },
+      {
+        meal: 'Snack',
+        example: `Greek yogurt + handful of almonds OR apple + peanut butter`,
+        approxCal: Math.round(calories * 0.15)
+      }
+    ];
+  }
+};
+
+'use strict';
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const State = {
+  profile: null,
+  plan: null,        // weekly workout plan
+  nutrition: null,   // calculated nutrition targets
+  logs: {
+    workouts: [],    // { date, dayNum, completed, exercises: [{id, done}] }
+    meals: [],       // { date, name, calories, protein, carbs, fat }
+    water: {},       // { "2025-06-07": 5 } (cups)
+    weight: [],      // { date, value }
+    checkins: [],    // { date, energy, sleep, mood, notes }
+  },
+  chat: [],          // { role, content }
+  view: 'home',
+  onboardStep: 0,
+  activeWorkout: null, // { dayIndex, exerciseIndex, started, timerSeconds }
+  _deferredInstall: null,
+};
+
+function save() {
+  try { localStorage.setItem('apexfit_v3', JSON.stringify({ profile: State.profile, plan: State.plan, nutrition: State.nutrition, logs: State.logs, chat: State.chat })); } catch(e) {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem('apexfit_v3');
+    if (raw) {
+      const d = JSON.parse(raw);
+      Object.assign(State, { profile: d.profile, plan: d.plan, nutrition: d.nutrition, logs: d.logs || State.logs, chat: d.chat || [] });
+    }
+  } catch(e) {}
+}
+
+// ── DATE HELPERS ──────────────────────────────────────────────────────────────
+function today() { return new Date().toISOString().split('T')[0]; }
+function weekStart() {
+  const d = new Date(); d.setDate(d.getDate() - d.getDay() + 1); // Monday
+  return d.toISOString().split('T')[0];
+}
+function dayName(offset=0) {
+  const d = new Date(); d.setDate(d.getDate()+offset);
+  return d.toLocaleDateString('en-US',{weekday:'long'});
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function nav(view) {
+  State.view = view;
+  render();
+  document.getElementById('screen').scrollTop = 0;
+}
+
+function setNav(view) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg, ms=2200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  const screen = document.getElementById('screen');
+  const nav = document.getElementById('bottom-nav');
+  const hasProfile = !!State.profile;
+
+  if (!hasProfile) {
+    nav.style.display = 'none';
+    screen.innerHTML = renderOnboard();
+    bindOnboard();
+    return;
+  }
+
+  nav.style.display = 'flex';
+  setNav(State.view);
+
+  const views = {
+    home: renderHome,
+    workout: renderWorkout,
+    nutrition: renderNutrition,
+    progress: renderProgress,
+    coach: renderCoach,
+  };
+  screen.innerHTML = (views[State.view] || renderHome)();
+  bindView(State.view);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── ONBOARDING ────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+const STEPS = 5;
+function renderOnboard() {
+  const s = State.onboardStep;
+  const dots = Array.from({length:STEPS}).map((_,i) => `<div class="step-dot ${i<=s?'done':''}"></div>`).join('');
+
+  const steps = [
+    renderOnboardStep0,
+    renderOnboardStep1,
+    renderOnboardStep2,
+    renderOnboardStep3,
+    renderOnboardStep4,
+  ];
+
+  return `<div class="onboard-wrap">
+    <div class="step-indicator">${dots}</div>
+    ${steps[s]()}
+  </div>`;
+}
+
+function renderOnboardStep0() {
+  return `
+  <div class="onboard-step active">
+    <div class="big-emoji">👋</div>
+    <div class="onboard-title">Hey, welcome to ApexFit!</div>
+    <div class="onboard-sub">I'll build your <strong>personal workout plan</strong> and calculate your <strong>exact nutrition targets</strong> in about 60 seconds.<br><br>No fitness experience needed — I'll explain everything.</div>
+    <div class="input-group"><div class="label">First, what's your name?</div>
+      <input type="text" id="ob-name" placeholder="Your first name" autocomplete="given-name" />
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="obNext()">Let's go →</button>
+  </div>`;
+}
+
+function renderOnboardStep1() {
+  const prof = State._ob || {};
+  return `
+  <div class="onboard-step active">
+    <div class="big-emoji">📏</div>
+    <div class="onboard-title">Your body stats</div>
+    <div class="onboard-sub">This lets me calculate the right calorie target for <em>your</em> body — not a generic number.</div>
+    <div class="input-row">
+      <div><div class="label">Age</div><input type="number" id="ob-age" placeholder="28" value="${prof.age||''}" min="13" max="99"/></div>
+      <div><div class="label">Gender</div>
+        <select id="ob-gender">
+          <option ${prof.gender==='Male'?'selected':''}>Male</option>
+          <option ${prof.gender==='Female'?'selected':''}>Female</option>
+          <option ${prof.gender==='Other'?'selected':''}>Other/Prefer not to say</option>
+        </select>
+      </div>
+    </div>
+    <div class="input-row">
+      <div><div class="label">Height (inches) <span style="color:var(--muted);font-size:11px">e.g. 5'8" = 68</span></div>
+        <input type="number" id="ob-height" placeholder="68" value="${prof.heightIn||''}" min="48" max="96"/>
+      </div>
+      <div><div class="label">Weight (lbs)</div>
+        <input type="number" id="ob-weight" placeholder="175" value="${prof.weightLbs||''}" step="0.5"/>
+      </div>
+    </div>
+    <div class="input-group"><div class="label">Goal weight (lbs) — optional</div>
+      <input type="number" id="ob-goalweight" placeholder="160" value="${prof.goalWeightLbs||''}" step="0.5"/>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="obNext()">Next →</button>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="obBack()">← Back</button>
+  </div>`;
+}
+
+function renderOnboardStep2() {
+  const prof = State._ob || {};
+  const goals = [
+    { val:'Weight Loss', icon:'🔥', sub:'Burn fat, feel lighter' },
+    { val:'Muscle Gain', icon:'💪', sub:'Build strength & size' },
+    { val:'General Health', icon:'❤️', sub:'Feel better overall' },
+    { val:'Recomposition', icon:'⚖️', sub:'Lose fat, gain muscle' },
+  ];
+  return `
+  <div class="onboard-step active">
+    <div class="big-emoji">🎯</div>
+    <div class="onboard-title">What's your main goal?</div>
+    <div class="onboard-sub">No wrong answer here. This shapes your workout and nutrition plan.</div>
+    <div class="choice-grid">
+      ${goals.map(g=>`
+        <div class="choice-btn ${prof.goal===g.val?'selected':''}" onclick="obSelectGoal('${g.val}',this)">
+          <span class="choice-icon">${g.icon}</span>
+          <span class="choice-label">${g.val}</span>
+          <span class="choice-sub">${g.sub}</span>
+        </div>`).join('')}
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="obNext()">Next →</button>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="obBack()">← Back</button>
+  </div>`;
+}
+
+function renderOnboardStep3() {
+  const prof = State._ob || {};
+  const acts = [
+    { val:'Sedentary', icon:'🪑', sub:'Mostly sitting, desk job' },
+    { val:'Lightly Active', icon:'🚶', sub:'Light movement, some walking' },
+    { val:'Moderately Active', icon:'🏃', sub:'Exercise 3x/week' },
+    { val:'Very Active', icon:'⚡', sub:'Hard training 5-6x/week' },
+  ];
+  return `
+  <div class="onboard-step active">
+    <div class="big-emoji">🏃</div>
+    <div class="onboard-title">How active are you right now?</div>
+    <div class="onboard-sub">Be honest — it helps me calculate your real calorie needs.</div>
+    <div class="choice-grid">
+      ${acts.map(a=>`
+        <div class="choice-btn ${prof.activityLevel===a.val?'selected':''}" onclick="obSelectActivity('${a.val}',this)">
+          <span class="choice-icon">${a.icon}</span>
+          <span class="choice-label">${a.val}</span>
+          <span class="choice-sub">${a.sub}</span>
+        </div>`).join('')}
+    </div>
+    <div class="input-group" style="margin-top:8px">
+      <div class="label">Days per week you can work out</div>
+      <select id="ob-days">
+        ${[2,3,4,5].map(d=>`<option value="${d}" ${prof.daysPerWeek==d?'selected':''}>${d} days/week</option>`).join('')}
+      </select>
+    </div>
+    <div class="input-group">
+      <div class="label">Fitness experience</div>
+      <select id="ob-exp">
+        <option value="beginner" ${prof.experience==='beginner'?'selected':''}>Complete Beginner — I'm just starting</option>
+        <option value="some" ${prof.experience==='some'?'selected':''}>Some Experience — worked out before</option>
+        <option value="intermediate" ${prof.experience==='intermediate'?'selected':''}>Intermediate — training consistently</option>
+      </select>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="obNext()">Next →</button>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="obBack()">← Back</button>
+  </div>`;
+}
+
+function renderOnboardStep4() {
+  const prof = State._ob || {};
+  // Preview nutrition
+  const n = WorkoutEngine.calculateNutrition({...prof});
+  return `
+  <div class="onboard-step active">
+    <div class="big-emoji">✅</div>
+    <div class="onboard-title">Your plan is ready, ${prof.name||'friend'}!</div>
+    <div class="onboard-sub">Here's what I've calculated for you:</div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-label">📊 Your Daily Nutrition</div>
+      <div class="macro-row">
+        <div class="macro-cell"><div class="macro-val" style="color:var(--accent)">${n.calories}</div><div class="macro-name">Calories</div></div>
+        <div class="macro-cell"><div class="macro-val" style="color:var(--blue)">${n.protein}g</div><div class="macro-name">Protein</div></div>
+        <div class="macro-cell"><div class="macro-val" style="color:var(--yellow)">${n.carbs}g</div><div class="macro-name">Carbs</div></div>
+        <div class="macro-cell"><div class="macro-val" style="color:var(--green)">${n.fat}g</div><div class="macro-name">Fat</div></div>
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;font-size:13px;color:var(--muted);line-height:1.5">${n.strategy}</div>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-label">🏋️ Your Workout Plan</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.6">I've built a <strong style="color:var(--text)">${prof.daysPerWeek||3}-day/week</strong> plan for <strong style="color:var(--text)">${prof.goal||'General Health'}</strong>. Every exercise is beginner-friendly with step-by-step instructions. No gym needed.</div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-primary" onclick="obFinish()">Start My Journey 🚀</button>
+  </div>`;
+}
+
+function obSelectGoal(val, el) {
+  document.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  if (!State._ob) State._ob = {};
+  State._ob.goal = val;
+}
+function obSelectActivity(val, el) {
+  document.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  if (!State._ob) State._ob = {};
+  State._ob.activityLevel = val;
+}
+
+function obNext() {
+  if (!State._ob) State._ob = {};
+  const s = State.onboardStep;
+
+  if (s === 0) {
+    const name = document.getElementById('ob-name')?.value?.trim();
+    if (!name) { alert('Please enter your name!'); return; }
+    State._ob.name = name;
+  }
+  if (s === 1) {
+    const age = document.getElementById('ob-age')?.value;
+    const height = document.getElementById('ob-height')?.value;
+    const weight = document.getElementById('ob-weight')?.value;
+    if (!age || !height || !weight) { alert('Please fill in all fields'); return; }
+    Object.assign(State._ob, { age, heightIn: parseFloat(height), weightLbs: parseFloat(weight), goalWeightLbs: parseFloat(document.getElementById('ob-goalweight')?.value)||null, gender: document.getElementById('ob-gender')?.value });
+  }
+  if (s === 2) {
+    if (!State._ob.goal) { alert('Please select a goal'); return; }
+  }
+  if (s === 3) {
+    if (!State._ob.activityLevel) { alert('Please select your activity level'); return; }
+    State._ob.daysPerWeek = document.getElementById('ob-days')?.value || 3;
+    State._ob.experience = document.getElementById('ob-exp')?.value || 'beginner';
+  }
+
+  if (s < STEPS - 1) {
+    State.onboardStep = s + 1;
+    document.getElementById('screen').innerHTML = renderOnboard();
+    bindOnboard();
+  }
+}
+
+function obBack() {
+  if (State.onboardStep > 0) {
+    State.onboardStep--;
+    document.getElementById('screen').innerHTML = renderOnboard();
+    bindOnboard();
+  }
+}
+
+function obFinish() {
+  State.profile = { ...State._ob, joinDate: today() };
+  State.nutrition = WorkoutEngine.calculateNutrition(State.profile);
+  State.plan = WorkoutEngine.generateWeeklyPlan(State.profile);
+  // Log starting weight
+  State.logs.weight.push({ date: today(), value: State.profile.weightLbs });
+  State._ob = null;
+  State.onboardStep = 0;
+  save();
+  State.view = 'home';
+  render();
+  toast(`Welcome to ApexFit, ${State.profile.name}! 🎉`);
+}
+
+function bindOnboard() {
+  // Auto-focus first input
+  setTimeout(() => { const f = document.querySelector('.onboard-step.active input'); if(f) f.focus(); }, 100);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── HOME SCREEN ───────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function renderHome() {
+  const p = State.profile;
+  const n = State.nutrition;
+  const todayLogs = State.logs.meals.filter(m=>m.date===today());
+  const todayCals = todayLogs.reduce((a,m)=>a+Number(m.calories||0),0);
+  const todayProt = todayLogs.reduce((a,m)=>a+Number(m.protein||0),0);
+  const waterToday = State.logs.water[today()] || 0;
+  const calPct = Math.min(100, Math.round((todayCals / n.calories) * 100));
+  const protPct = Math.min(100, Math.round((todayProt / n.protein) * 100));
+  const waterPct = Math.min(100, Math.round((waterToday / 8) * 100));
+  const todayCheckin = State.logs.checkins.find(c=>c.date===today());
+  const latestWeight = State.logs.weight.length ? State.logs.weight[State.logs.weight.length-1].value : p.weightLbs;
+  const streak = getWorkoutStreak();
+
+  // Today's workout
+  const todayPlan = getTodayPlan();
+
+  const greetHour = new Date().getHours();
+  const greet = greetHour < 12 ? 'Good morning' : greetHour < 17 ? 'Good afternoon' : 'Good evening';
+
+  return `<div class="page">
+    <div class="page-section">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+        <div>
+          <div style="font-size:22px;font-weight:800">${greet}, ${p.name}! 👋</div>
+          <div style="color:var(--muted);font-size:13px">${dayName()} · ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric'})}</div>
+        </div>
+        ${streak>0?`<div style="text-align:center"><div style="font-size:22px">🔥</div><div style="font-size:11px;font-weight:700;color:var(--accent)">${streak} day streak</div></div>`:''}
+      </div>
+    </div>
+
+    <!-- Today's workout CTA -->
+    ${todayPlan ? `
+    <div class="page-section">
+      <div style="background:linear-gradient(135deg,rgba(255,107,53,.18),rgba(255,107,53,.06));border:1.5px solid rgba(255,107,53,.3);border-radius:var(--radius);padding:18px;margin-bottom:0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em">Today's Workout</div>
+            <div style="font-size:20px;font-weight:800">${todayPlan.name}</div>
+            <div style="font-size:13px;color:var(--muted)">~${todayPlan.estimatedMinutes} min · ${todayPlan.exercises.filter(e=>e.category==='strength').length} exercises</div>
+          </div>
+          <div style="font-size:42px">💪</div>
+        </div>
+        ${isTodayWorkoutDone() ? `<div class="chip chip-green" style="display:inline-flex">✓ Completed today</div>` :
+          `<button class="btn btn-primary" onclick="startWorkout(${getTodayPlanIndex()})">Start Workout →</button>`}
+      </div>
+    </div>` : `
+    <div class="page-section">
+      <div class="card" style="text-align:center;padding:24px">
+        <div style="font-size:36px;margin-bottom:8px">🛋️</div>
+        <div style="font-weight:700;margin-bottom:4px">Rest Day</div>
+        <div style="font-size:13px;color:var(--muted)">Recovery is part of the plan. Stretch, walk, hydrate.</div>
+      </div>
+    </div>`}
+
+    <!-- Nutrition rings -->
+    <div class="page-section" style="margin-top:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="section-label" style="margin:0">Today's Nutrition</div>
+        <button class="btn btn-sm btn-outline" onclick="nav('nutrition')" style="padding:6px 12px;font-size:12px">Log food</button>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-val" style="color:var(--accent)">${todayCals} <span style="font-size:14px;font-weight:500;color:var(--muted)">/ ${n.calories}</span></div>
+          <div class="kpi-label">Calories</div>
+          <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" style="width:${calPct}%;background:var(--accent)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-val" style="color:var(--blue)">${todayProt}g <span style="font-size:14px;font-weight:500;color:var(--muted)">/ ${n.protein}g</span></div>
+          <div class="kpi-label">Protein</div>
+          <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" style="width:${protPct}%;background:var(--blue)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Water tracker -->
+    <div class="page-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="section-label" style="margin:0">💧 Water Today (${waterToday}/8 glasses)</div>
+      </div>
+      <div class="water-cups" id="water-cups">
+        ${Array.from({length:8}).map((_,i)=>`
+          <div class="water-cup ${i<waterToday?'filled':''}" onclick="logWater(${i+1})">
+            ${i<waterToday?'💧':'○'}
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Check-in -->
+    <div class="page-section">
+      ${todayCheckin ? `
+      <div class="card">
+        <div class="section-label">Today's Check-in ✓</div>
+        <div style="display:flex;gap:16px">
+          <div style="text-align:center"><div style="font-size:24px">${['😞','😐','🙂','😊','🤩'][todayCheckin.mood-1]||'🙂'}</div><div style="font-size:11px;color:var(--muted)">Mood</div></div>
+          <div style="text-align:center"><div style="font-size:20px;font-weight:800;color:var(--yellow)">${todayCheckin.energy}/5</div><div style="font-size:11px;color:var(--muted)">Energy</div></div>
+          <div style="text-align:center"><div style="font-size:20px;font-weight:800;color:var(--purple)">${todayCheckin.sleep}h</div><div style="font-size:11px;color:var(--muted)">Sleep</div></div>
+        </div>
+      </div>` : `
+      <button class="btn btn-secondary" onclick="openCheckin()" style="width:100%">+ Daily Check-in (mood, sleep, energy)</button>`}
+    </div>
+  </div>
+  ${renderCheckinModal()}`;
+}
+
+function getTodayPlan() {
+  if (!State.plan) return null;
+  const dayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon...
+  // Map plan days round-robin to the week
+  const planDays = State.plan.filter(d => d.type !== 'recovery');
+  const daysPerWeek = parseInt(State.profile?.daysPerWeek) || 3;
+  const workoutDayMap = getWorkoutDays(daysPerWeek);
+  const idx = workoutDayMap.indexOf(dayOfWeek);
+  if (idx === -1) return null;
+  return State.plan[idx % State.plan.length] || null;
+}
+
+function getTodayPlanIndex() {
+  const daysPerWeek = parseInt(State.profile?.daysPerWeek) || 3;
+  const workoutDayMap = getWorkoutDays(daysPerWeek);
+  const dayOfWeek = new Date().getDay();
+  return workoutDayMap.indexOf(dayOfWeek) % (State.plan?.length || 1);
+}
+
+function getWorkoutDays(n) {
+  // Spread workouts through the week
+  const maps = { 2:[1,4], 3:[1,3,5], 4:[1,2,4,5], 5:[1,2,3,4,5] };
+  return maps[n] || maps[3];
+}
+
+function isTodayWorkoutDone() {
+  return State.logs.workouts.some(w => w.date === today());
+}
+
+function getWorkoutStreak() {
+  let streak = 0;
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.toISOString().split('T')[0];
+    const daysPerWeek = parseInt(State.profile?.daysPerWeek) || 3;
+    const workoutDayMap = getWorkoutDays(daysPerWeek);
+    if (!workoutDayMap.includes(d.getDay())) continue; // rest day, skip
+    if (State.logs.workouts.some(w => w.date === ds)) streak++;
+    else if (i > 0) break;
+  }
+  return streak;
+}
+
+function logWater(cups) {
+  State.logs.water[today()] = cups;
+  save();
+  render();
+  if (cups === 8) toast('You hit your water goal! 💧');
+}
+
+// ── CHECKIN MODAL ─────────────────────────────────────────────────────────────
+function renderCheckinModal() {
+  return `<div class="modal-overlay" id="checkin-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Daily Check-in</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:20px">Takes 30 seconds. Helps track your wellbeing over time.</div>
+      <div class="input-group">
+        <div class="label">How do you feel today?</div>
+        <div style="display:flex;gap:10px;justify-content:center;margin:8px 0">
+          ${['😞','😐','🙂','😊','🤩'].map((e,i)=>`<div onclick="selectMood(${i+1},this)" class="mood-opt" data-val="${i+1}" style="font-size:30px;cursor:pointer;padding:6px;border-radius:8px;border:2px solid var(--border);transition:all .15s">${e}</div>`).join('')}
+        </div>
+      </div>
+      <div class="input-row">
+        <div><div class="label">Energy level (1-5)</div><input type="number" id="ci-energy" min="1" max="5" placeholder="3" /></div>
+        <div><div class="label">Sleep last night (hrs)</div><input type="number" id="ci-sleep" min="0" max="12" step="0.5" placeholder="7" /></div>
+      </div>
+      <div class="input-group"><div class="label">Notes (optional)</div><textarea id="ci-notes" rows="2" placeholder="How's it going?"></textarea></div>
+      <button class="btn btn-primary" onclick="saveCheckin()">Save Check-in</button>
+    </div>
+  </div>`;
+}
+
+let _selectedMood = 3;
+function openCheckin() { _selectedMood=3; document.getElementById('checkin-modal').classList.add('open'); }
+function closeCheckin() { document.getElementById('checkin-modal').classList.remove('open'); }
+function selectMood(val, el) {
+  _selectedMood = val;
+  document.querySelectorAll('.mood-opt').forEach(e => { e.style.borderColor='var(--border)'; e.style.background='none'; });
+  el.style.borderColor = 'var(--accent)'; el.style.background = 'var(--accent-dim)';
+}
+function saveCheckin() {
+  State.logs.checkins = State.logs.checkins.filter(c=>c.date!==today());
+  State.logs.checkins.push({
+    date: today(), mood: _selectedMood,
+    energy: Number(document.getElementById('ci-energy')?.value||3),
+    sleep: Number(document.getElementById('ci-sleep')?.value||7),
+    notes: document.getElementById('ci-notes')?.value
+  });
+  save(); closeCheckin(); render(); toast('Check-in saved! ✓');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── WORKOUT SCREEN ────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function renderWorkout() {
+  if (State.activeWorkout) return renderActiveWorkout();
+  return renderWorkoutPlan();
+}
+
+function renderWorkoutPlan() {
+  const plan = State.plan || [];
+  const daysPerWeek = parseInt(State.profile?.daysPerWeek) || 3;
+  const workoutDays = getWorkoutDays(daysPerWeek);
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  return `<div class="page">
+    <div class="screen-title">Your Plan</div>
+    <div class="screen-sub">${plan.length}-day/week · ${State.profile?.goal}</div>
+
+    <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap">
+      ${workoutDays.map(d=>`<span class="chip chip-accent">${dayNames[d]}</span>`).join('')}
+      <span style="font-size:12px;color:var(--muted);align-self:center">workout days</span>
+    </div>
+
+    ${plan.map((day, idx) => {
+      const strengthEx = day.exercises.filter(e=>e.category==='strength');
+      const todayLog = State.logs.workouts.find(w=>w.planIndex===idx && w.date===today());
+      return `
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <div>
+            <div style="font-size:17px;font-weight:800">${day.name}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">~${day.estimatedMinutes} min · ${strengthEx.length} exercises</div>
+          </div>
+          ${todayLog?`<span class="chip chip-green">✓ Done</span>`:
+            `<button class="btn btn-sm btn-primary" onclick="startWorkout(${idx})">Start →</button>`}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          ${strengthEx.slice(0,4).map(e=>`<span class="chip chip-accent" style="font-size:11px">${e.name}</span>`).join('')}
+          ${strengthEx.length>4?`<span style="font-size:11px;color:var(--muted);align-self:center">+${strengthEx.length-4} more</span>`:''}
+        </div>
+        <button onclick="toggleExercises(${idx})" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:8px 0 0;font-family:var(--font)">View all exercises ↓</button>
+        <div id="exercises-${idx}" style="display:none;margin-top:10px">
+          ${day.exercises.filter(e=>e.category==='strength'||e.category==='cardio').map(e=>`
+            <div class="exercise-card">
+              <div class="exercise-name">${e.name}</div>
+              <div class="exercise-detail">
+                ${e.sets?`<strong>${e.sets} sets × ${e.reps}</strong> · Rest: ${e.rest}s`:
+                  `<strong>${e.duration} minutes</strong>`}
+                ${e.muscles?`<br>🎯 ${e.muscles}`:''}</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">💡 ${e.tip}</div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+
+    <div class="card" style="margin-bottom:12px;text-align:center;border-style:dashed">
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">Want a different plan?</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Regenerate if these exercises don't feel right</div>
+      <button class="btn btn-secondary btn-sm" onclick="regeneratePlan()" style="width:auto;display:inline-flex">🔄 Regenerate Plan</button>
+    </div>
+  </div>`;
+}
+
+function toggleExercises(idx) {
+  const el = document.getElementById(`exercises-${idx}`);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function startWorkout(planIndex) {
+  const day = State.plan[planIndex];
+  if (!day) return;
+  State.activeWorkout = {
+    planIndex,
+    dayName: day.name,
+    exercises: day.exercises.filter(e=>e.category==='strength'||e.category==='cardio').map(e=>({...e, done:false})),
+    exerciseIndex: 0,
+    startTime: Date.now(),
+    timerInterval: null,
+    elapsed: 0
+  };
+  State.view = 'workout';
+  render();
+  startTimer();
+}
+
+let _timerInterval = null;
+function startTimer() {
+  clearInterval(_timerInterval);
+  _timerInterval = setInterval(() => {
+    if (State.activeWorkout) {
+      State.activeWorkout.elapsed = Math.floor((Date.now() - State.activeWorkout.startTime) / 1000);
+      const el = document.getElementById('workout-timer');
+      if (el) el.textContent = formatTime(State.activeWorkout.elapsed);
+    }
+  }, 1000);
+}
+
+function formatTime(sec) {
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = (sec%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+function renderActiveWorkout() {
+  const aw = State.activeWorkout;
+  const total = aw.exercises.length;
+  const done = aw.exercises.filter(e=>e.done).length;
+  const pct = Math.round((done/total)*100);
+  const ex = aw.exercises[aw.exerciseIndex];
+  const elapsed = aw.elapsed || 0;
+
+  return `<div style="display:flex;flex-direction:column;height:100%">
+    <!-- Header -->
+    <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+      <div>
+        <div style="font-weight:800;font-size:16px">${aw.dayName}</div>
+        <div style="font-size:13px;color:var(--muted)">${done}/${total} exercises · <span id="workout-timer">${formatTime(elapsed)}</span></div>
+      </div>
+      <button onclick="finishWorkout()" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--muted);padding:8px 14px;font-size:13px;cursor:pointer;font-family:var(--font)">Finish</button>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="height:4px;background:var(--surface2);flex-shrink:0">
+      <div style="height:100%;width:${pct}%;background:var(--accent);transition:width .4s ease"></div>
+    </div>
+
+    <!-- Exercise list -->
+    <div style="flex:1;overflow-y:auto;padding:16px">
+      ${aw.exercises.map((e,i) => {
+        const isCurrent = i === aw.exerciseIndex && !e.done;
+        const isPast = e.done;
+        return `
+        <div onclick="setExercise(${i})" style="background:${isCurrent?'var(--accent-dim)':isPast?'var(--surface2)':'var(--surface)'};border:${isCurrent?'2px solid rgba(255,107,53,.4)':'1.5px solid var(--border)'};border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;opacity:${isPast?.6:1}">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="width:28px;height:28px;border-radius:50%;background:${isPast?'var(--green)':isCurrent?'var(--accent)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0">${isPast?'✓':i+1}</div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:15px">${e.name}</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:2px">${e.sets?`${e.sets} sets × ${e.reps} · ${e.rest}s rest`:e.duration?`${e.duration} min`:''}</div>
+              ${isCurrent?`<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;padding:10px;background:var(--surface2);border-radius:var(--radius-sm)">💡 ${e.tip}</div>`:''}
+            </div>
+          </div>
+          ${isCurrent?`
+          <div style="margin-top:14px">
+            <button class="btn btn-primary" onclick="completeExercise(event,${i})" style="padding:14px">✓ Done — Next Exercise</button>
+          </div>`:''}
+        </div>`;
+      }).join('')}
+
+      ${done === total ? `
+      <div style="text-align:center;padding:24px 16px">
+        <div style="font-size:48px;margin-bottom:12px">🎉</div>
+        <div style="font-size:22px;font-weight:800;margin-bottom:8px">Workout Complete!</div>
+        <div style="font-size:14px;color:var(--muted);margin-bottom:20px">Time: ${formatTime(elapsed)}</div>
+        <button class="btn btn-primary" onclick="finishWorkout()">Finish & Save</button>
+      </div>` : ''}
+    </div>
+  </div>`;
+}
+
+function setExercise(i) {
+  State.activeWorkout.exerciseIndex = i;
+  render();
+  startTimer();
+}
+
+function completeExercise(evt, i) {
+  evt.stopPropagation();
+  State.activeWorkout.exercises[i].done = true;
+  // Find next undone
+  const next = State.activeWorkout.exercises.findIndex((e,idx) => !e.done && idx > i);
+  State.activeWorkout.exerciseIndex = next === -1 ? i : next;
+  render();
+  startTimer();
+  const done = State.activeWorkout.exercises.filter(e=>e.done).length;
+  const total = State.activeWorkout.exercises.length;
+  if (done === total) { clearInterval(_timerInterval); }
+}
+
+function finishWorkout() {
+  clearInterval(_timerInterval);
+  const aw = State.activeWorkout;
+  const done = aw.exercises.filter(e=>e.done).length;
+  State.logs.workouts.push({
+    date: today(), planIndex: aw.planIndex, dayName: aw.dayName,
+    duration: Math.floor(aw.elapsed/60), exercisesDone: done, total: aw.exercises.length
+  });
+  State.activeWorkout = null;
+  save();
+  State.view = 'workout';
+  render();
+  toast(`Great work! Workout saved 💪`);
+}
+
+function regeneratePlan() {
+  if (confirm('Generate a new workout plan? This replaces the current one.')) {
+    State.plan = WorkoutEngine.generateWeeklyPlan(State.profile);
+    save(); render(); toast('New plan generated! 🎉');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── NUTRITION SCREEN ──────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function renderNutrition() {
+  const n = State.nutrition;
+  const todayLogs = State.logs.meals.filter(m=>m.date===today());
+  const totals = { cal:0, protein:0, carbs:0, fat:0 };
+  todayLogs.forEach(m=>{ totals.cal+=Number(m.calories||0); totals.protein+=Number(m.protein||0); totals.carbs+=Number(m.carbs||0); totals.fat+=Number(m.fat||0); });
+  const remaining = Math.max(0, n.calories - totals.cal);
+  const foods = WorkoutEngine.getFoodExamples(n);
+
+  return `<div class="page">
+    <div class="screen-title">Nutrition</div>
+    <div class="screen-sub">Your personalized daily targets</div>
+
+    <!-- Targets -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-label" style="margin-bottom:12px">Today's Progress</div>
+      <div class="macro-row">
+        <div class="macro-cell">
+          <div class="macro-val" style="color:var(--accent)">${totals.cal}</div>
+          <div class="macro-name">Eaten</div>
+          <div class="macro-pct" style="color:var(--muted)">/ ${n.calories}</div>
+        </div>
+        <div class="macro-cell">
+          <div class="macro-val" style="color:var(--blue)">${totals.protein}g</div>
+          <div class="macro-name">Protein</div>
+          <div class="macro-pct" style="color:var(--muted)">/ ${n.protein}g</div>
+        </div>
+        <div class="macro-cell">
+          <div class="macro-val" style="color:var(--yellow)">${totals.carbs}g</div>
+          <div class="macro-name">Carbs</div>
+          <div class="macro-pct" style="color:var(--muted)">/ ${n.carbs}g</div>
+        </div>
+        <div class="macro-cell">
+          <div class="macro-val" style="color:var(--green)">${totals.fat}g</div>
+          <div class="macro-name">Fat</div>
+          <div class="macro-pct" style="color:var(--muted)">/ ${n.fat}g</div>
+        </div>
+      </div>
+      <div class="progress-bar" style="margin-top:8px">
+        <div class="progress-fill" style="width:${Math.min(100,(totals.cal/n.calories)*100)}%;background:${totals.cal>n.calories*1.05?'var(--red)':'var(--accent)'}"></div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-top:8px">${remaining>0?`${remaining} calories remaining today`:`You've hit your calorie goal!`}</div>
+    </div>
+
+    <!-- Why these numbers -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-label">📊 Why these numbers?</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.7">${n.strategy}</div>
+      ${n.weeksToGoal?`<div style="margin-top:10px;font-size:13px"><span class="chip chip-green">📅 Estimated ${n.weeksToGoal} weeks to goal</span></div>`:''}
+      <div style="margin-top:10px;font-size:13px;color:var(--muted)">💧 Drink at least <strong style="color:var(--blue)">${n.water} oz of water</strong> daily (about ${Math.round(n.water/8)} glasses).</div>
+    </div>
+
+    <!-- Log food -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-label">Add Food</div>
+      <div class="input-group"><div class="label">What did you eat?</div>
+        <input type="text" id="food-name" placeholder="e.g. Chicken breast + rice" />
+      </div>
+      <div class="input-row">
+        <div><div class="label">Calories</div><input type="number" id="food-cal" placeholder="450" /></div>
+        <div><div class="label">Protein (g)</div><input type="number" id="food-protein" placeholder="35" /></div>
+      </div>
+      <div class="input-row">
+        <div><div class="label">Carbs (g)</div><input type="number" id="food-carbs" placeholder="40" /></div>
+        <div><div class="label">Fat (g)</div><input type="number" id="food-fat" placeholder="12" /></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Don't know macros? Just enter calories — that's the most important number.</div>
+      <button class="btn btn-primary" onclick="logFood()">Add to Today's Log</button>
+    </div>
+
+    <!-- Today's log -->
+    ${todayLogs.length>0?`
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-label">Today's Log</div>
+      ${todayLogs.map((m,i)=>`
+        <div class="list-row">
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:14px">${m.name}</div>
+            <div style="font-size:12px;color:var(--muted)">${m.protein||0}g P · ${m.carbs||0}g C · ${m.fat||0}g F</div>
+          </div>
+          <div style="font-size:15px;font-weight:800;color:var(--accent);margin-right:8px">${m.calories||0}</div>
+          <button onclick="deleteFood(${i})" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px">×</button>
+        </div>`).join('')}
+    </div>`:''
+    }
+
+    <!-- Meal ideas -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-label">🍽️ Meal Ideas for Your Goal</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">These examples hit your protein target and keep you full. Adjust portions to your calorie goal.</div>
+      ${foods.map(f=>`
+        <div class="card-inner" style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <div style="font-weight:700;font-size:13px">${f.meal}</div>
+            <span class="chip chip-accent" style="font-size:11px">~${f.approxCal} cal</span>
+          </div>
+          <div style="font-size:13px;color:var(--muted)">${f.example}</div>
+        </div>`).join('')}
+    </div>
+
+    <!-- What are macros -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-label">❓ What are macros?</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--text)">Protein</strong> — builds and repairs muscle. Found in meat, eggs, dairy, beans.<br><br>
+        <strong style="color:var(--text)">Carbs</strong> — your main energy source. Found in rice, bread, fruit, potatoes.<br><br>
+        <strong style="color:var(--text)">Fat</strong> — supports hormones and brain health. Found in nuts, oils, avocado, meat.
+      </div>
+    </div>
+  </div>`;
+}
+
+function logFood() {
+  const name = document.getElementById('food-name')?.value?.trim();
+  if (!name) { alert('Please enter what you ate'); return; }
+  State.logs.meals.push({
+    date: today(), name,
+    calories: Number(document.getElementById('food-cal')?.value||0),
+    protein: Number(document.getElementById('food-protein')?.value||0),
+    carbs: Number(document.getElementById('food-carbs')?.value||0),
+    fat: Number(document.getElementById('food-fat')?.value||0),
+    id: Date.now()
+  });
+  save(); render(); toast('Food logged! ✓');
+}
+
+function deleteFood(i) {
+  const todayMeals = State.logs.meals.filter(m=>m.date===today());
+  const idx = State.logs.meals.indexOf(todayMeals[i]);
+  if (idx>-1) State.logs.meals.splice(idx,1);
+  save(); render();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── PROGRESS SCREEN ───────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function renderProgress() {
+  const p = State.profile;
+  const wLogs = State.logs.weight;
+  const latestW = wLogs.length ? wLogs[wLogs.length-1].value : p.weightLbs;
+  const startW = p.weightLbs;
+  const goalW = p.goalWeightLbs || startW;
+  const change = +(latestW - startW).toFixed(1);
+  const totalWorkouts = State.logs.workouts.length;
+  const thisWeekW = getThisWeekWorkouts();
+  const avgSleep = State.logs.checkins.length ? (State.logs.checkins.slice(-7).reduce((a,c)=>a+(c.sleep||7),0)/Math.min(7,State.logs.checkins.length)).toFixed(1) : '—';
+
+  const goalPct = goalW !== startW ? Math.max(0,Math.min(100,Math.round(((startW-latestW)/(startW-goalW))*100))) : 0;
+
+  return `<div class="page">
+    <div class="screen-title">Progress</div>
+    <div class="screen-sub">Your journey so far</div>
+
+    <!-- Stats -->
+    <div class="kpi-grid" style="margin-bottom:16px">
+      <div class="kpi-card">
+        <div class="kpi-val" style="color:var(--accent)">${latestW}</div>
+        <div class="kpi-label">Current Weight</div>
+        <div class="kpi-sub" style="color:${change>0?'var(--red)':'var(--green)'}">${change>0?'+':''}${change} lbs from start</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" style="color:var(--green)">${totalWorkouts}</div>
+        <div class="kpi-label">Workouts Done</div>
+        <div class="kpi-sub">${thisWeekW} this week</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" style="color:var(--purple)">${avgSleep}</div>
+        <div class="kpi-label">Avg Sleep (hrs)</div>
+        <div class="kpi-sub">7-day average</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" style="color:var(--yellow)">${getWorkoutStreak()}</div>
+        <div class="kpi-label">Day Streak</div>
+        <div class="kpi-sub">🔥 Keep going</div>
+      </div>
+    </div>
+
+    <!-- Goal progress -->
+    ${goalW!==startW?`
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-label">🎯 Goal Progress</div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:8px">
+        <span>Start: ${startW} lbs</span><span>Goal: ${goalW} lbs</span>
+      </div>
+      <div class="progress-bar" style="height:12px;margin-bottom:8px">
+        <div class="progress-fill" style="width:${goalPct}%;background:linear-gradient(90deg,var(--accent),var(--yellow))"></div>
+      </div>
+      <div style="font-size:15px;font-weight:700">${goalPct}% of the way there</div>
+      ${State.nutrition.weeksToGoal?`<div style="font-size:13px;color:var(--muted);margin-top:4px">Estimated ${State.nutrition.weeksToGoal} more weeks at current pace</div>`:''}
+    </div>`:''
+    }
+
+    <!-- Log weight -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-label">Log Today's Weight</div>
+      <div class="input-row">
+        <div><input type="number" id="w-input" placeholder="${latestW}" step="0.1" /></div>
+        <div><button class="btn btn-primary" onclick="logWeight()" style="height:100%">Log</button></div>
+      </div>
+    </div>
+
+    <!-- Weight history -->
+    ${wLogs.length>1?`
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-label">Weight History</div>
+      ${[...wLogs].reverse().slice(0,10).map(w=>`
+        <div class="list-row">
+          <div style="color:var(--muted);font-size:13px">${w.date}</div>
+          <div class="spacer"></div>
+          <div style="font-weight:700">${w.value} lbs</div>
+        </div>`).join('')}
+    </div>`:''
+    }
+
+    <!-- Workout history -->
+    ${State.logs.workouts.length>0?`
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-label">Workout History</div>
+      ${[...State.logs.workouts].reverse().slice(0,8).map(w=>`
+        <div class="list-row">
+          <div style="font-size:20px">💪</div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:14px">${w.dayName}</div>
+            <div style="font-size:12px;color:var(--muted)">${w.date} · ${w.duration||0} min · ${w.exercisesDone||0}/${w.total||0} exercises</div>
+          </div>
+          <span class="chip chip-green" style="font-size:11px">Done</span>
+        </div>`).join('')}
+    </div>`:''
+    }
+
+    <!-- Settings shortcut -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-label">Settings</div>
+      <div class="list-row" onclick="editProfile()" style="cursor:pointer">
+        <div style="flex:1">
+          <div style="font-weight:700">Edit Profile & Targets</div>
+          <div style="font-size:12px;color:var(--muted)">Update your weight, goal, or recalculate nutrition</div>
+        </div>
+        <div style="color:var(--muted)">→</div>
+      </div>
+      <div class="list-row" onclick="if(confirm('Reset all data?'))resetAll()" style="cursor:pointer">
+        <div style="flex:1;color:var(--red)">
+          <div style="font-weight:700">Reset All Data</div>
+          <div style="font-size:12px;color:var(--muted)">Start fresh from onboarding</div>
+        </div>
+        <div style="color:var(--muted)">→</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function getThisWeekWorkouts() {
+  const d = new Date(); d.setDate(d.getDate()-d.getDay()+1); d.setHours(0,0,0,0);
+  return State.logs.workouts.filter(w=>new Date(w.date)>=d).length;
+}
+
+function logWeight() {
+  const v = parseFloat(document.getElementById('w-input')?.value);
+  if (!v || isNaN(v)) { alert('Enter a valid weight'); return; }
+  State.logs.weight.push({ date: today(), value: v });
+  save(); render(); toast('Weight logged! ✓');
+}
+
+function editProfile() {
+  // Open a simple edit modal — just re-onboard
+  if (confirm('Edit your profile? This will take you back to setup (your logs are kept).')) {
+    State._ob = {...State.profile};
+    State.profile = null;
+    State.onboardStep = 1;
+    render();
+  }
+}
+
+function resetAll() {
+  localStorage.removeItem('apexfit_v3');
+  location.reload();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── AI COACH ─────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function renderCoach() {
+  const msgs = State.chat;
+  const suggestions = [
+    "What should I eat before a workout?",
+    "How much water do I actually need?",
+    "I'm sore — should I still work out?",
+    "How do I know if I'm making progress?",
+    "Why is protein so important?",
+    "What if I miss a workout day?"
+  ];
+
+  return `<div style="display:flex;flex-direction:column;height:100%">
+    <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;flex-shrink:0">
+      <div style="font-weight:800;font-size:18px">AI Coach</div>
+      <div style="font-size:13px;color:var(--muted)">Ask anything about fitness or nutrition</div>
+    </div>
+
+    <div class="chat-messages" id="chat-messages" style="padding:16px;flex:1;overflow-y:auto">
+      ${msgs.length===0?`
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:48px;margin-bottom:12px">🤖</div>
+        <div style="font-weight:700;margin-bottom:8px">Your Personal Coach</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6">I know your goal, your plan, and your nutrition targets. Ask me anything!</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px">
+        ${suggestions.map(s=>`<button onclick="quickQuestion('${s.replace(/'/g,"\\'")}',this)" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;padding:8px 14px;font-size:13px;color:var(--text);cursor:pointer;font-family:var(--font)">${s}</button>`).join('')}
+      </div>`:
+      msgs.map(m=>`<div class="chat-bubble ${m.role==='user'?'user':'ai'}">${m.content.replace(/\n/g,'<br>')}</div>`).join('')}
+      ${State._aiLoading?`<div class="chat-bubble ai" style="color:var(--muted)">Thinking…</div>`:''}
+    </div>
+
+    <div style="padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0;background:var(--surface)">
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Ask your coach..." onkeydown="if(event.key==='Enter')sendChat()" />
+        <button class="chat-send" onclick="sendChat()">↑</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildCoachContext() {
+  const p = State.profile || {};
+  const n = State.nutrition || {};
+  const lastW = State.logs.workouts.slice(-3);
+  return `You are a friendly, encouraging fitness coach named Alex inside the ApexFit app. The user is a beginner or near-beginner. Keep answers SHORT (3-4 sentences max), practical, and jargon-free. No bullet-point lists unless necessary.
+
+User profile: name=${p.name}, age=${p.age}, gender=${p.gender}, weight=${p.weightLbs}lbs, goal weight=${p.goalWeightLbs||'not set'}lbs, goal=${p.goal}, activity=${p.activityLevel}, experience=${p.experience}.
+Calorie target: ${n.calories}, protein: ${n.protein}g, carbs: ${n.carbs}g, fat: ${n.fat}g.
+Recent workouts: ${lastW.length} in last 3 days. Workout plan: ${State.plan?.length||0} days/week.
+Today's date: ${today()}. Always be warm, motivating, and specific to their data.`;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input?.value?.trim();
+  if (!text || State._aiLoading) return;
+  input.value = '';
+  State.chat.push({ role:'user', content: text });
+  State._aiLoading = true;
+  renderCoachView();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:400,
+        system: buildCoachContext(),
+        messages: State.chat.slice(-8).map(m=>({role:m.role,content:m.content}))
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(c=>c.text||'').join('') || "I couldn't connect. Try again!";
+    State.chat.push({ role:'assistant', content: reply });
+    save();
+  } catch(e) {
+    State.chat.push({ role:'assistant', content:"Couldn't connect — check your network and try again." });
+  }
+  State._aiLoading = false;
+  renderCoachView();
+}
+
+function quickQuestion(q) {
+  const input = document.getElementById('chat-input');
+  if (input) input.value = q;
+  sendChat();
+}
+
+function renderCoachView() {
+  const screen = document.getElementById('screen');
+  if (screen && State.view === 'coach') {
+    screen.innerHTML = renderCoach();
+    bindView('coach');
+    setTimeout(() => {
+      const msgs = document.getElementById('chat-messages');
+      if (msgs) msgs.scrollTop = msgs.scrollHeight;
+    }, 50);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── BIND EVENTS ───────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function bindView(view) {
+  if (view === 'coach') {
+    setTimeout(() => {
+      const msgs = document.getElementById('chat-messages');
+      if (msgs) msgs.scrollTop = msgs.scrollHeight;
+    }, 100);
+  }
+  // Close modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if(e.target===el) el.classList.remove('open'); });
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── INSTALL / PWA ─────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  State._deferredInstall = e;
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.classList.add('show');
+});
+
+function installApp() {
+  if (State._deferredInstall) {
+    State._deferredInstall.prompt();
+    State._deferredInstall.userChoice.then(() => {
+      State._deferredInstall = null;
+      document.getElementById('install-banner')?.classList.remove('show');
+    });
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+load();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  render();
+
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (State.activeWorkout) {
+        if (!confirm('Leave active workout?')) return;
+        clearInterval(_timerInterval);
+        State.activeWorkout = null;
+      }
+      nav(btn.dataset.view);
+    });
+  });
+});
+
+// Expose globals used inline
+Object.assign(window, {
+  nav, obNext, obBack, obFinish, obSelectGoal, obSelectActivity,
+  startWorkout, finishWorkout, completeExercise, setExercise, toggleExercises, regeneratePlan,
+  logFood, deleteFood, logWeight, logWater,
+  openCheckin, closeCheckin, selectMood, saveCheckin,
+  sendChat, quickQuestion,
+  editProfile, resetAll, installApp,
+});
+</script>
+<script>
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const s = document.getElementById('splash');
+      if(s){s.classList.add('hidden');setTimeout(()=>s.remove(),400);}
+    }, 600);
+  });
+</script>
+</body>
+</html>
